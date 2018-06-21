@@ -175,13 +175,13 @@ export async function getMdeStateFromDraftState(
 
 export function buildNewDraftState(
     currentState: EditorState,
-    markdownState: MarkdownState,
+    markdown: string,
+    newSelection: TextSelection = null,
 ) {
-    const { text, selection } = markdownState;
     // TODO: Fix the redo. It's no working properly but this is an implementation detail.
 
     // handling text change history push
-    const contentState = ContentState.createFromText(text);
+    const contentState = ContentState.createFromText(markdown);
     let state = EditorState.forceSelection(
         currentState,
         currentState.getSelection(),
@@ -189,8 +189,8 @@ export function buildNewDraftState(
     state = EditorState.push(state, contentState, 'insert-characters');
 
     // handling text selection history push
-    const selectionState = selection
-        ? buildSelectionState(state.getCurrentContent(), selection)
+    const selectionState = newSelection
+        ? buildSelectionState(state.getCurrentContent(), newSelection)
         : currentState.getSelection();
 
     return EditorState.forceSelection(state, selectionState);
